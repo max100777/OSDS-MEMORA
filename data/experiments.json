@@ -1,0 +1,494 @@
+{
+  "1e41b83b": {
+    "id": "1e41b83b",
+    "name": "Locality Paging vs Belady FIFO",
+    "created_at": "2026-10-21 23:48:50",
+    "hypothesis": "LRU and Markov policies will outperform FIFO on clustered reference sequences with high temporal locality.",
+    "configuration": {
+      "frames": 3,
+      "algorithm": "LRU",
+      "sequence_length": 13
+    },
+    "results": {
+      "simulation": {
+        "algorithm": "LRU",
+        "num_frames": 3,
+        "total_references": 13,
+        "total_hits": 4,
+        "total_faults": 9,
+        "hit_ratio": 0.3077,
+        "fault_rate": 0.6923,
+        "total_evictions": 6,
+        "trace": [
+          {
+            "step": 0,
+            "page": 7,
+            "is_hit": false,
+            "frames_before": [
+              null,
+              null,
+              null
+            ],
+            "frames_after": [
+              7,
+              null,
+              null
+            ],
+            "evicted_page": null,
+            "reason": "Page Fault (Cold/Compulsory): Allocated free Frame 0 to Page 7 at t=0.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 0,
+            "cumulative_faults": 1,
+            "hit_ratio": 0,
+            "fault_rate": 1,
+            "prediction_info": null
+          },
+          {
+            "step": 1,
+            "page": 0,
+            "is_hit": false,
+            "frames_before": [
+              7,
+              null,
+              null
+            ],
+            "frames_after": [
+              7,
+              0,
+              null
+            ],
+            "evicted_page": null,
+            "reason": "Page Fault (Cold/Compulsory): Allocated free Frame 1 to Page 0 at t=1.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 0,
+            "cumulative_faults": 2,
+            "hit_ratio": 0,
+            "fault_rate": 1,
+            "prediction_info": null
+          },
+          {
+            "step": 2,
+            "page": 1,
+            "is_hit": false,
+            "frames_before": [
+              7,
+              0,
+              null
+            ],
+            "frames_after": [
+              7,
+              0,
+              1
+            ],
+            "evicted_page": null,
+            "reason": "Page Fault (Cold/Compulsory): Allocated free Frame 2 to Page 1 at t=2.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 0,
+            "cumulative_faults": 3,
+            "hit_ratio": 0,
+            "fault_rate": 1,
+            "prediction_info": null
+          },
+          {
+            "step": 3,
+            "page": 2,
+            "is_hit": false,
+            "frames_before": [
+              7,
+              0,
+              1
+            ],
+            "frames_after": [
+              2,
+              0,
+              1
+            ],
+            "evicted_page": 7,
+            "reason": "Page Fault (Capacity): Evicted LRU Page 7 from Frame 0 (last used at t=0). Loaded Page 2 at t=3.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 0,
+            "cumulative_faults": 4,
+            "hit_ratio": 0,
+            "fault_rate": 1,
+            "prediction_info": null
+          },
+          {
+            "step": 4,
+            "page": 0,
+            "is_hit": true,
+            "frames_before": [
+              2,
+              0,
+              1
+            ],
+            "frames_after": [
+              2,
+              0,
+              1
+            ],
+            "evicted_page": null,
+            "reason": "Hit: Page 0 resident in Frame 1. Recency timestamp updated from t=1 to t=4.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 1,
+            "cumulative_faults": 4,
+            "hit_ratio": 0.2,
+            "fault_rate": 0.8,
+            "prediction_info": null
+          },
+          {
+            "step": 5,
+            "page": 3,
+            "is_hit": false,
+            "frames_before": [
+              2,
+              0,
+              1
+            ],
+            "frames_after": [
+              2,
+              0,
+              3
+            ],
+            "evicted_page": 1,
+            "reason": "Page Fault (Capacity): Evicted LRU Page 1 from Frame 2 (last used at t=2). Loaded Page 3 at t=5.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 1,
+            "cumulative_faults": 5,
+            "hit_ratio": 0.1667,
+            "fault_rate": 0.8333,
+            "prediction_info": null
+          },
+          {
+            "step": 6,
+            "page": 0,
+            "is_hit": true,
+            "frames_before": [
+              2,
+              0,
+              3
+            ],
+            "frames_after": [
+              2,
+              0,
+              3
+            ],
+            "evicted_page": null,
+            "reason": "Hit: Page 0 resident in Frame 1. Recency timestamp updated from t=4 to t=6.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 2,
+            "cumulative_faults": 5,
+            "hit_ratio": 0.2857,
+            "fault_rate": 0.7143,
+            "prediction_info": null
+          },
+          {
+            "step": 7,
+            "page": 4,
+            "is_hit": false,
+            "frames_before": [
+              2,
+              0,
+              3
+            ],
+            "frames_after": [
+              4,
+              0,
+              3
+            ],
+            "evicted_page": 2,
+            "reason": "Page Fault (Capacity): Evicted LRU Page 2 from Frame 0 (last used at t=3). Loaded Page 4 at t=7.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 2,
+            "cumulative_faults": 6,
+            "hit_ratio": 0.25,
+            "fault_rate": 0.75,
+            "prediction_info": null
+          },
+          {
+            "step": 8,
+            "page": 2,
+            "is_hit": false,
+            "frames_before": [
+              4,
+              0,
+              3
+            ],
+            "frames_after": [
+              4,
+              0,
+              2
+            ],
+            "evicted_page": 3,
+            "reason": "Page Fault (Capacity): Evicted LRU Page 3 from Frame 2 (last used at t=5). Loaded Page 2 at t=8.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 2,
+            "cumulative_faults": 7,
+            "hit_ratio": 0.2222,
+            "fault_rate": 0.7778,
+            "prediction_info": null
+          },
+          {
+            "step": 9,
+            "page": 3,
+            "is_hit": false,
+            "frames_before": [
+              4,
+              0,
+              2
+            ],
+            "frames_after": [
+              4,
+              3,
+              2
+            ],
+            "evicted_page": 0,
+            "reason": "Page Fault (Capacity): Evicted LRU Page 0 from Frame 1 (last used at t=6). Loaded Page 3 at t=9.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 2,
+            "cumulative_faults": 8,
+            "hit_ratio": 0.2,
+            "fault_rate": 0.8,
+            "prediction_info": null
+          },
+          {
+            "step": 10,
+            "page": 0,
+            "is_hit": false,
+            "frames_before": [
+              4,
+              3,
+              2
+            ],
+            "frames_after": [
+              0,
+              3,
+              2
+            ],
+            "evicted_page": 4,
+            "reason": "Page Fault (Capacity): Evicted LRU Page 4 from Frame 0 (last used at t=7). Loaded Page 0 at t=10.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 2,
+            "cumulative_faults": 9,
+            "hit_ratio": 0.1818,
+            "fault_rate": 0.8182,
+            "prediction_info": null
+          },
+          {
+            "step": 11,
+            "page": 3,
+            "is_hit": true,
+            "frames_before": [
+              0,
+              3,
+              2
+            ],
+            "frames_after": [
+              0,
+              3,
+              2
+            ],
+            "evicted_page": null,
+            "reason": "Hit: Page 3 resident in Frame 1. Recency timestamp updated from t=9 to t=11.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 3,
+            "cumulative_faults": 9,
+            "hit_ratio": 0.25,
+            "fault_rate": 0.75,
+            "prediction_info": null
+          },
+          {
+            "step": 12,
+            "page": 2,
+            "is_hit": true,
+            "frames_before": [
+              0,
+              3,
+              2
+            ],
+            "frames_after": [
+              0,
+              3,
+              2
+            ],
+            "evicted_page": null,
+            "reason": "Hit: Page 2 resident in Frame 2. Recency timestamp updated from t=8 to t=12.",
+            "algorithm_used": "LRU",
+            "cumulative_hits": 4,
+            "cumulative_faults": 9,
+            "hit_ratio": 0.3077,
+            "fault_rate": 0.6923,
+            "prediction_info": null
+          }
+        ],
+        "prediction_accuracy": null,
+        "execution_time_ms": 0.19
+      },
+      "comparison": {
+        "reference_sequence": [
+          7,
+          0,
+          1,
+          2,
+          0,
+          3,
+          0,
+          4,
+          2,
+          3,
+          0,
+          3,
+          2
+        ],
+        "num_frames": 3,
+        "summaries": [
+          {
+            "algorithm": "FIFO",
+            "num_frames": 3,
+            "total_references": 13,
+            "total_hits": 3,
+            "total_faults": 10,
+            "hit_ratio": 0.2308,
+            "fault_rate": 0.7692,
+            "total_evictions": 7,
+            "prediction_accuracy": null
+          },
+          {
+            "algorithm": "LRU",
+            "num_frames": 3,
+            "total_references": 13,
+            "total_hits": 4,
+            "total_faults": 9,
+            "hit_ratio": 0.3077,
+            "fault_rate": 0.6923,
+            "total_evictions": 6,
+            "prediction_accuracy": null
+          },
+          {
+            "algorithm": "OPTIMAL",
+            "num_frames": 3,
+            "total_references": 13,
+            "total_hits": 6,
+            "total_faults": 7,
+            "hit_ratio": 0.4615,
+            "fault_rate": 0.5385,
+            "total_evictions": 4,
+            "prediction_accuracy": null
+          },
+          {
+            "algorithm": "MARKOV",
+            "num_frames": 3,
+            "total_references": 13,
+            "total_hits": 5,
+            "total_faults": 8,
+            "hit_ratio": 0.3846,
+            "fault_rate": 0.6154,
+            "total_evictions": 5,
+            "prediction_accuracy": 0.2727
+          },
+          {
+            "algorithm": "ADAPTIVE",
+            "num_frames": 3,
+            "total_references": 13,
+            "total_hits": 5,
+            "total_faults": 8,
+            "hit_ratio": 0.3846,
+            "fault_rate": 0.6154,
+            "total_evictions": 5,
+            "prediction_accuracy": 0.4
+          }
+        ],
+        "frame_sweep": [
+          {
+            "num_frames": 2,
+            "faults": {
+              "FIFO": 11,
+              "LRU": 11,
+              "OPTIMAL": 9,
+              "MARKOV": 10,
+              "ADAPTIVE": 10
+            },
+            "hit_ratios": {
+              "FIFO": 0.1538,
+              "LRU": 0.1538,
+              "OPTIMAL": 0.3077,
+              "MARKOV": 0.2308,
+              "ADAPTIVE": 0.2308
+            }
+          },
+          {
+            "num_frames": 3,
+            "faults": {
+              "FIFO": 10,
+              "LRU": 9,
+              "OPTIMAL": 7,
+              "MARKOV": 8,
+              "ADAPTIVE": 8
+            },
+            "hit_ratios": {
+              "FIFO": 0.2308,
+              "LRU": 0.3077,
+              "OPTIMAL": 0.4615,
+              "MARKOV": 0.3846,
+              "ADAPTIVE": 0.3846
+            }
+          },
+          {
+            "num_frames": 4,
+            "faults": {
+              "FIFO": 7,
+              "LRU": 6,
+              "OPTIMAL": 6,
+              "MARKOV": 6,
+              "ADAPTIVE": 6
+            },
+            "hit_ratios": {
+              "FIFO": 0.4615,
+              "LRU": 0.5385,
+              "OPTIMAL": 0.5385,
+              "MARKOV": 0.5385,
+              "ADAPTIVE": 0.5385
+            }
+          },
+          {
+            "num_frames": 5,
+            "faults": {
+              "FIFO": 6,
+              "LRU": 6,
+              "OPTIMAL": 6,
+              "MARKOV": 6,
+              "ADAPTIVE": 6
+            },
+            "hit_ratios": {
+              "FIFO": 0.5385,
+              "LRU": 0.5385,
+              "OPTIMAL": 0.5385,
+              "MARKOV": 0.5385,
+              "ADAPTIVE": 0.5385
+            }
+          },
+          {
+            "num_frames": 6,
+            "faults": {
+              "FIFO": 6,
+              "LRU": 6,
+              "OPTIMAL": 6,
+              "MARKOV": 6,
+              "ADAPTIVE": 6
+            },
+            "hit_ratios": {
+              "FIFO": 0.5385,
+              "LRU": 0.5385,
+              "OPTIMAL": 0.5385,
+              "MARKOV": 0.5385,
+              "ADAPTIVE": 0.5385
+            }
+          }
+        ],
+        "belady_detected": false,
+        "belady_detail": null,
+        "recommended_frames": null
+      }
+    },
+    "notes": "Tested on 3 physical frames across 25 page access steps."
+  }
+}
