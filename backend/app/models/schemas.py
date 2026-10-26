@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List, Dict, Optional, Any, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 
 class WorkloadType(str, Enum):
@@ -19,6 +19,10 @@ class AlgorithmType(str, Enum):
     MARKOV = "markov"
     LSTM = "lstm"
     ADAPTIVE = "adaptive"
+
+class AccessType(str, Enum):
+    READ = "read"
+    WRITE = "write"
 
 class AllocationPolicy(str, Enum):
     EQUAL = "equal"
@@ -59,12 +63,26 @@ class SimulationStepEvent(BaseModel):
     hit_ratio: float
     fault_rate: float
     prediction_info: Optional[Dict[str, Any]] = None
+    timestamp: int = 0
+    process_id: str = "P1"
+    operation: AccessType = AccessType.READ
+    page_table: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+    candidate_scores: List[Dict[str, Any]] = Field(default_factory=list)
+    simulated_access_cost: float = 0.0
+    cumulative_access_cost: float = 0.0
+    dirty_writeback: bool = False
 
 class SimulationRequest(BaseModel):
     reference_sequence: List[int] = Field(..., min_length=1)
     num_frames: int = Field(default=3, ge=1, le=32)
     algorithm: AlgorithmType = AlgorithmType.LRU
     seed: Optional[int] = None
+    process_id: str = "P1"
+    operations: Optional[List[AccessType]] = None
+    write_ratio: float = Field(default=0.0, ge=0.0, le=1.0)
+    memory_latency: float = Field(default=1.0, ge=0.0)
+    disk_read_latency: float = Field(default=100.0, ge=0.0)
+    disk_write_latency: float = Field(default=100.0, ge=0.0)
 
 class SimulationResult(BaseModel):
     algorithm: str
@@ -78,6 +96,9 @@ class SimulationResult(BaseModel):
     trace: List[SimulationStepEvent]
     prediction_accuracy: Optional[float] = None
     execution_time_ms: float = 0.0
+    simulated_access_cost: float = 0.0
+    dirty_writebacks: int = 0
+    workload_pattern: Optional[str] = None
 
 # Comparison Schemas
 class ComparisonRequest(BaseModel):
@@ -91,6 +112,8 @@ class ComparisonRequest(BaseModel):
         AlgorithmType.ADAPTIVE
     ]
     frame_sweep_max: Optional[int] = Field(default=None, ge=2, le=16)
+    target_fault_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    candidate_frames: Optional[List[int]] = None
 
 class AlgorithmSummary(BaseModel):
     algorithm: str
@@ -102,6 +125,8 @@ class AlgorithmSummary(BaseModel):
     fault_rate: float
     total_evictions: int
     prediction_accuracy: Optional[float] = None
+    simulated_access_cost: float = 0.0
+    execution_time_ms: float = 0.0
 
 class FrameSweepPoint(BaseModel):
     num_frames: int
@@ -116,6 +141,8 @@ class ComparisonResult(BaseModel):
     belady_detected: Optional[bool] = None
     belady_detail: Optional[str] = None
     recommended_frames: Optional[int] = None
+    target_met: Optional[bool] = None
+    optimization_message: Optional[str] = None
 
 # Markov Schemas
 class MarkovPredictRequest(BaseModel):
@@ -179,6 +206,8 @@ class ThrashingTimelinePoint(BaseModel):
     pressure_state: str  # Normal, Elevated, High, Thrashing
     alert: Optional[str] = None
     recommendation: Optional[str] = None
+    memory_health_score: float = 100.0
+    fault_rate_trend: float = 0.0
 
 class ThrashingAnalysisResponse(BaseModel):
     timeline: List[ThrashingTimelinePoint]
@@ -188,12 +217,14 @@ class ThrashingAnalysisResponse(BaseModel):
     mean_working_set_size: float
     recommended_frame_count: int
     summary_message: str
+    memory_health_score: float = 100.0
+    actions_taken: List[str] = Field(default_factory=list)
 
 # Multi-Process Schemas
 class ProcessConfig(BaseModel):
     pid: str
     name: str
-    reference_sequence: List[int]
+    reference_sequence: List[int] = Field(..., min_length=1)
     min_frames: int = Field(default=1, ge=1)
 
 class MultiProcessRequest(BaseModel):
@@ -201,6 +232,17 @@ class MultiProcessRequest(BaseModel):
     total_frames: int = Field(default=9, ge=3, le=64)
     allocation_policy: AllocationPolicy = AllocationPolicy.ADAPTIVE
     window_size: int = Field(default=6, ge=3, le=20)
+
+    @model_validator(mode="after")
+    def validate_process_budget(self):
+        if not self.processes:
+            raise ValueError("At least one process is required")
+        pids = [p.pid for p in self.processes]
+        if len(pids) != len(set(pids)):
+            raise ValueError("Process IDs must be unique")
+        if sum(p.min_frames for p in self.processes) > self.total_frames:
+            raise ValueError("Minimum frame guarantees exceed the total frame budget")
+        return self
 
 class ProcessMetric(BaseModel):
     pid: str
@@ -250,3 +292,44 @@ class ExperimentSaveRequest(BaseModel):
     configuration: Dict[str, Any]
     results: Dict[str, Any]
     notes: Optional[str] = ""
+
+class TraceUploadRequest(BaseModel):
+    content: str
+    format: str = Field(pattern="^(csv|json)$")
+
+class TraceUploadResponse(BaseModel):
+    sequences: Dict[str, List[int]]
+    operations: Dict[str, List[AccessType]] = Field(default_factory=dict)
+    timestamps: Dict[str, List[float]] = Field(default_factory=dict)
+    total_references: int
+
+class OptimizationRequest(BaseModel):
+    reference_sequence: List[int] = Field(..., min_length=1)
+    algorithms: List[AlgorithmType] = Field(default_factory=lambda: [AlgorithmType.LRU])
+    candidate_frames: List[int] = Field(default_factory=lambda: list(range(2, 9)))
+    target_fault_rate: float = Field(default=0.25, ge=0.0, le=1.0)
+    max_ram_budget: int = Field(default=16, ge=1, le=64)
+
+class OptimizationCandidate(BaseModel):
+    algorithm: str
+    frames: int
+    fault_rate: float
+    hit_ratio: float
+    simulated_access_cost: float
+
+class OptimizationResponse(BaseModel):
+    candidates: List[OptimizationCandidate]
+    recommendation: Optional[OptimizationCandidate] = None
+    target_met: bool
+    message: str
+
+class SimulationSessionCreate(BaseModel):
+    simulation: SimulationRequest
+
+class SimulationSessionState(BaseModel):
+    id: str
+    status: str
+    cursor: int
+    total_steps: int
+    current_event: Optional[SimulationStepEvent] = None
+    result: SimulationResult

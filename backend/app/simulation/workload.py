@@ -11,8 +11,33 @@ Generates realistic memory access patterns:
 """
 import random
 import re
+import statistics
 from typing import List, Tuple
 from app.models.schemas import WorkloadType, WorkloadRequest, WorkloadResponse
+
+def classify_access_pattern(sequence: List[int], window_size: int = 20) -> str:
+    """Classify a recent trace using deterministic, documented window statistics."""
+    window = sequence[-window_size:]
+    if len(window) < 3:
+        return "insufficient_history"
+    transitions = [b - a for a, b in zip(window, window[1:])]
+    sequential = sum(abs(d) == 1 for d in transitions) / len(transitions)
+    repeats = 1.0 - (len(set(window)) / len(window))
+    same_page = sum(d == 0 for d in transitions) / len(transitions)
+    spatial = sum(abs(d) <= 2 for d in transitions) / len(transitions)
+    frequencies = [window.count(p) for p in set(window)]
+    concentration = max(frequencies) / len(window)
+    if same_page >= 0.25 or repeats >= 0.70:
+        return "repetitive"
+    if sequential >= 0.75:
+        return "sequential"
+    if concentration >= 0.40:
+        return "high_temporal_locality"
+    if spatial >= 0.70:
+        return "high_spatial_locality"
+    if repeats < 0.20 and len(set(transitions)) > len(transitions) * 0.5:
+        return "random_unpredictable"
+    return "mixed"
 
 def generate_workload(req: WorkloadRequest) -> WorkloadResponse:
     if req.seed is not None:
@@ -94,7 +119,7 @@ def generate_workload(req: WorkloadRequest) -> WorkloadResponse:
                 active_phase = list(range(page_range))
             page = random.choice(active_phase) if random.random() < 0.85 else random.randint(0, page_range - 1)
             sequence.append(page)
-        desc = f"Phase-changing execution: Working set shifts dynamically between distinct function modules."
+        desc = "Phase-changing execution: Working set shifts dynamically between distinct function modules."
 
     elif w_type == WorkloadType.THRASHING:
         # Working set significantly larger than typical frame count (e.g. 8-10 pages accessed cyclicly)

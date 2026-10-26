@@ -100,43 +100,43 @@ export function App() {
     switch (currentTab) {
       case 'overview':
         return {
-          title: 'System Observability Overview',
-          subtitle: 'Real-time telemetry, hit/fault distribution, and frame residency metrics'
+          title: 'Overview',
+          subtitle: 'Reference, fault, and frame-residency metrics'
         };
       case 'simulator':
         return {
-          title: 'Virtual Memory Step Simulator',
-          subtitle: 'Interactive hardware frame animation with deterministic stepping and decision rationale'
+          title: 'Memory Simulator',
+          subtitle: 'Inspect each reference, frame transition, and replacement decision'
         };
       case 'algorithms':
         return {
-          title: 'Algorithm Laboratory & Benchmark',
-          subtitle: 'Side-by-side execution of FIFO, LRU, Optimal benchmark, Markov, and Belady anomaly'
+          title: 'Algorithm Comparison',
+          subtitle: 'Compare replacement policies against the same workload'
         };
       case 'prediction':
         return {
-          title: 'AI Prediction Center',
-          subtitle: 'First-order Markov conditional transitions and lightweight PyTorch sequence inference'
+          title: 'Prediction Models',
+          subtitle: 'Markov transition estimates and LSTM sequence inference'
         };
       case 'thrashing':
         return {
-          title: 'Working-Set Thrashing Monitor',
-          subtitle: 'Working-Set Size WSS(t, Δ) tracking, Page-Fault Frequency, and pressure warnings'
+          title: 'Memory Pressure',
+          subtitle: 'Working-set demand, page-fault frequency, and capacity warnings'
         };
       case 'multiprocess':
         return {
-          title: 'Multi-Process Partition Manager',
-          subtitle: 'Concurrent address space isolation, dynamic frame reallocation, and Jain’s Fairness Index'
+          title: 'Process Allocation',
+          subtitle: 'Frame distribution, working sets, and allocation fairness'
         };
       case 'experiments':
         return {
-          title: 'Experiments & Scientific Reports',
-          subtitle: 'Archive empirical trials, export CSV data, and produce viva-ready methodologies'
+          title: 'Experiments',
+          subtitle: 'Save configurations, review results, and export data'
         };
       case 'learn':
         return {
-          title: 'OSDS Coursework Educational Guide',
-          subtitle: 'Academic concepts, formulas, memory management theory, and examination prep'
+          title: 'Reference',
+          subtitle: 'Definitions, formulas, and implementation notes'
         };
     }
   };
@@ -164,7 +164,7 @@ export function App() {
           isSimulating={isQuickRunning}
         />
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-5">
           <div className="max-w-7xl mx-auto pb-12">
             {currentTab === 'overview' && (
               <OverviewView

@@ -4,8 +4,11 @@
 
 @layer base {
   body {
-    @apply bg-dark-950 text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white min-h-screen overflow-x-hidden;
+    @apply bg-dark-950 text-slate-200 font-sans antialiased selection:bg-slate-600 selection:text-white min-h-screen overflow-x-hidden;
+    font-feature-settings: "tnum" 1, "ss01" 1;
   }
+
+  button, input, select, textarea { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-950; }
 }
 
 /* Custom technical dark scrollbar */
@@ -24,12 +27,20 @@
   background: #334155;
 }
 
-/* Technical pulse animation */
-@keyframes subtle-glow {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.4)); }
+/* A restrained operational UI: depth comes from borders, not effects. */
+[class*="shadow-"] {
+  box-shadow: none !important;
 }
 
-.animate-glow {
-  animation: subtle-glow 3s infinite ease-in-out;
+[class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

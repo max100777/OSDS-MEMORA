@@ -49,6 +49,14 @@ export interface SimulationStepEvent {
     switch_reason?: string | null;
     model_status?: string;
   };
+  timestamp: number;
+  process_id: string;
+  operation: 'read' | 'write';
+  page_table: Record<string, { present: boolean; valid: boolean; frame: number | null; dirty: boolean }>;
+  candidate_scores: Record<string, unknown>[];
+  simulated_access_cost: number;
+  cumulative_access_cost: number;
+  dirty_writeback: boolean;
 }
 
 type bool_alias = boolean;
@@ -65,6 +73,9 @@ export interface SimulationResult {
   trace: SimulationStepEvent[];
   prediction_accuracy: number | null;
   execution_time_ms: number;
+  simulated_access_cost: number;
+  dirty_writebacks: number;
+  workload_pattern?: string;
 }
 
 export interface AlgorithmSummary {
@@ -77,6 +88,8 @@ export interface AlgorithmSummary {
   fault_rate: number;
   total_evictions: number;
   prediction_accuracy?: number | null;
+  simulated_access_cost: number;
+  execution_time_ms: number;
 }
 
 export interface FrameSweepPoint {
@@ -93,6 +106,8 @@ export interface ComparisonResult {
   belady_detected?: boolean;
   belady_detail?: string;
   recommended_frames?: number;
+  target_met?: boolean;
+  optimization_message?: string;
 }
 
 export interface MarkovPredictResponse {
@@ -130,6 +145,8 @@ export interface ThrashingTimelinePoint {
   pressure_state: 'Normal' | 'Elevated' | 'High' | 'Potential Thrashing';
   alert: string | null;
   recommendation: string | null;
+  memory_health_score: number;
+  fault_rate_trend: number;
 }
 
 export interface ThrashingAnalysisResponse {
@@ -140,6 +157,23 @@ export interface ThrashingAnalysisResponse {
   mean_working_set_size: number;
   recommended_frame_count: number;
   summary_message: string;
+  memory_health_score: number;
+  actions_taken: string[];
+}
+
+export interface OptimizationCandidate {
+  algorithm: string;
+  frames: number;
+  fault_rate: number;
+  hit_ratio: number;
+  simulated_access_cost: number;
+}
+
+export interface OptimizationResponse {
+  candidates: OptimizationCandidate[];
+  recommendation: OptimizationCandidate | null;
+  target_met: boolean;
+  message: string;
 }
 
 export interface ProcessMetric {

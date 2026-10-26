@@ -194,7 +194,7 @@ export const SimulatorView: React.FC<SimulatorViewProps> = ({
               <option value="optimal">Optimal — Oracle Benchmark (Offline)</option>
               <option value="markov">Markov-Guided Replacement</option>
               <option value="lstm">LSTM-Guided Replacement</option>
-              <option value="adaptive">Self-Learning Adaptive Controller</option>
+              <option value="adaptive">Adaptive Controller</option>
             </select>
           </div>
 

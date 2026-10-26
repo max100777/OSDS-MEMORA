@@ -92,7 +92,7 @@ export const MultiProcessView: React.FC = () => {
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider font-mono flex items-center gap-2">
               <Users className="w-4 h-4 text-indigo-400" />
-              Intelligent Multi-Process Memory Allocation
+              Multi-Process Memory Allocation
             </h3>
             <p className="text-xs text-slate-400">
               Interleaved concurrent simulation across independent virtual address spaces with dynamic frame redistribution

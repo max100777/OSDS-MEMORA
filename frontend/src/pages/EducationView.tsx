@@ -74,7 +74,7 @@ export const EducationView: React.FC<EducationViewProps> = ({ onLaunchTopicSimul
     },
     {
       id: 'ai_paging',
-      title: '5. AI/ML-Powered Paging (Markov & LSTM)',
+      title: '5. Prediction-Guided Paging (Markov & LSTM)',
       icon: Brain,
       summary: 'Using sequential statistical models to estimate page reuse likelihood without future-reference cheating.',
       details: [

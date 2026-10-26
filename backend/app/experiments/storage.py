@@ -1,87 +1,76 @@
-"""
-Local JSON-based storage for experiment tracking and historical reproducibility.
-"""
+"""SQLite experiment persistence with standards-compliant CSV export."""
+import csv
+import io
 import json
-import os
+import sqlite3
 import uuid
-from datetime import datetime
-from typing import List, Optional, Dict, Any
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import List, Optional
 from app.models.schemas import ExperimentRecord, ExperimentSaveRequest
 
-STORAGE_FILE = os.path.join("data", "experiments.json")
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+DATABASE_FILE = PROJECT_ROOT / "data" / "memora.db"
 
-def _load_data() -> Dict[str, Any]:
-    if not os.path.exists(STORAGE_FILE):
-        return {}
-    try:
-        with open(STORAGE_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return {}
+def _connect():
+    DATABASE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(DATABASE_FILE, timeout=10)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("""CREATE TABLE IF NOT EXISTS experiments (
+        id TEXT PRIMARY KEY, name TEXT NOT NULL, created_at TEXT NOT NULL,
+        hypothesis TEXT NOT NULL, configuration TEXT NOT NULL,
+        results TEXT NOT NULL, notes TEXT NOT NULL DEFAULT ''
+    )""")
+    return conn
 
-def _save_data(data: Dict[str, Any]):
-    os.makedirs(os.path.dirname(STORAGE_FILE), exist_ok=True)
-    with open(STORAGE_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+def _row_to_record(row) -> ExperimentRecord:
+    return ExperimentRecord(id=row["id"], name=row["name"], created_at=row["created_at"],
+        hypothesis=row["hypothesis"], configuration=json.loads(row["configuration"]),
+        results=json.loads(row["results"]), notes=row["notes"])
 
 def save_experiment(req: ExperimentSaveRequest) -> ExperimentRecord:
-    exp_id = str(uuid.uuid4())[:8]
-    record = ExperimentRecord(
-        id=exp_id,
-        name=req.name,
-        created_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        hypothesis=req.hypothesis,
-        configuration=req.configuration,
-        results=req.results,
-        notes=req.notes or ""
-    )
-    data = _load_data()
-    data[exp_id] = record.model_dump()
-    _save_data(data)
+    record = ExperimentRecord(id=uuid.uuid4().hex[:8], name=req.name,
+        created_at=datetime.now(timezone.utc).isoformat(), hypothesis=req.hypothesis,
+        configuration=req.configuration, results=req.results, notes=req.notes or "")
+    with _connect() as conn:
+        conn.execute("INSERT INTO experiments VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (record.id, record.name, record.created_at, record.hypothesis,
+             json.dumps(record.configuration), json.dumps(record.results), record.notes))
     return record
 
 def list_experiments() -> List[ExperimentRecord]:
-    data = _load_data()
-    records = [ExperimentRecord(**item) for item in data.values()]
-    # Sort descending by creation
-    return sorted(records, key=lambda r: r.created_at, reverse=True)
+    with _connect() as conn:
+        rows = conn.execute("SELECT * FROM experiments ORDER BY created_at DESC").fetchall()
+    return [_row_to_record(row) for row in rows]
 
 def get_experiment(exp_id: str) -> Optional[ExperimentRecord]:
-    data = _load_data()
-    if exp_id in data:
-        return ExperimentRecord(**data[exp_id])
-    return None
+    with _connect() as conn:
+        row = conn.execute("SELECT * FROM experiments WHERE id = ?", (exp_id,)).fetchone()
+    return _row_to_record(row) if row else None
 
 def export_experiment_csv(record: ExperimentRecord) -> str:
-    """Export experiment results as CSV formatted string."""
-    lines = [
-        f"# MEMORA Experiment Report: {record.name}",
-        f"# ID: {record.id} | Date: {record.created_at}",
-        f"# Hypothesis: {record.hypothesis}",
-        ""
-    ]
-
-    # Check if results contain algorithm summaries
-    results = record.results
-    if "summaries" in results:
-        lines.append("Algorithm,Frames,References,Hits,Faults,Hit_Ratio,Fault_Rate,Evictions,Prediction_Accuracy")
-        for s in results["summaries"]:
-            acc = s.get("prediction_accuracy", "")
-            lines.append(
-                f"{s.get('algorithm')},{s.get('num_frames')},{s.get('total_references')},"
-                f"{s.get('total_hits')},{s.get('total_faults')},{s.get('hit_ratio')},"
-                f"{s.get('fault_rate')},{s.get('total_evictions')},{acc}"
-            )
-
-    if "frame_sweep" in results and results["frame_sweep"]:
-        lines.append("")
-        lines.append("# Frame Count Sweep Fault Metrics")
-        headers = ["Frames"] + list(results["frame_sweep"][0].get("faults", {}).keys())
-        lines.append(",".join(headers))
-        for pt in results["frame_sweep"]:
-            row = [str(pt["num_frames"])]
-            for algo in headers[1:]:
-                row.append(str(pt.get("faults", {}).get(algo, "")))
-            lines.append(",".join(row))
-
-    return "\n".join(lines)
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(["MEMORA Experiment Report", record.name])
+    writer.writerow(["ID", record.id])
+    writer.writerow(["Date", record.created_at])
+    writer.writerow(["Hypothesis", record.hypothesis])
+    writer.writerow([])
+    summaries = record.results.get("summaries", [])
+    if summaries:
+        fields = ["algorithm", "num_frames", "total_references", "total_hits", "total_faults",
+                  "hit_ratio", "fault_rate", "total_evictions", "prediction_accuracy",
+                  "simulated_access_cost", "execution_time_ms"]
+        writer.writerow(fields)
+        for summary in summaries:
+            writer.writerow([summary.get(field, "") for field in fields])
+    sweep = record.results.get("frame_sweep", [])
+    if sweep:
+        writer.writerow([])
+        writer.writerow(["Frame Count Sweep"])
+        algorithms = list(sweep[0].get("faults", {}).keys())
+        writer.writerow(["frames", *algorithms])
+        for point in sweep:
+            writer.writerow([point.get("num_frames"), *[point.get("faults", {}).get(a, "") for a in algorithms]])
+    return output.getvalue()

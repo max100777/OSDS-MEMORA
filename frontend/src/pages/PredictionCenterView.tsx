@@ -116,7 +116,7 @@ export const PredictionCenterView: React.FC = () => {
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider font-mono flex items-center gap-2">
               <Brain className="w-4 h-4 text-violet-400" />
-              AI Sequence Prediction Engine (Markov + PyTorch LSTM)
+              Sequence Prediction Models
             </h3>
             <p className="text-xs text-slate-400">
               Evaluates upcoming virtual memory reference likelihood using strictly historical observations

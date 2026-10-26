@@ -281,13 +281,13 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         >
           <div className="flex items-center gap-2 mb-2 text-violet-400">
             <Brain className="w-5 h-5" />
-            <span className="font-mono text-xs uppercase font-bold text-white">AI Prediction Center</span>
+            <span className="font-mono text-xs uppercase font-bold text-white">Prediction Models</span>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
             Inspect Markov transition probabilities and train the lightweight PyTorch LSTM sequence model.
           </p>
           <div className="mt-3 flex items-center text-xs text-violet-400 font-mono group-hover:translate-x-1 transition-transform">
-            <span>View Predictive Models</span>
+            <span>View models</span>
             <ArrowRight className="w-3.5 h-3.5 ml-1" />
           </div>
         </div>

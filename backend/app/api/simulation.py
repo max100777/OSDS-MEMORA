@@ -63,7 +63,9 @@ def api_compare(req: ComparisonRequest):
                 hit_ratio=res.hit_ratio,
                 fault_rate=res.fault_rate,
                 total_evictions=res.total_evictions,
-                prediction_accuracy=res.prediction_accuracy
+                prediction_accuracy=res.prediction_accuracy,
+                simulated_access_cost=res.simulated_access_cost,
+                execution_time_ms=res.execution_time_ms
             ))
 
         # Frame sweep from 2 up to max_sweep if requested
@@ -110,10 +112,22 @@ def api_compare(req: ComparisonRequest):
 
         # Recommended frames: frame count achieving >= 75% hit ratio under LRU or Optimal
         rec_frames = None
+        target_met = None
+        optimization_message = None
+        target_hit_ratio = 1.0 - req.target_fault_rate if req.target_fault_rate is not None else None
         for pt in frame_sweep:
-            if pt.hit_ratios.get("LRU", 0) >= 0.75 or pt.hit_ratios.get("OPTIMAL (THEORETICAL BENCHMARK)", 0) >= 0.80:
+            if target_hit_ratio is not None:
+                if any(rate >= target_hit_ratio for rate in pt.hit_ratios.values()):
+                    rec_frames = pt.num_frames
+                    target_met = True
+                    break
+            elif pt.hit_ratios.get("LRU", 0) >= 0.75 or pt.hit_ratios.get("OPTIMAL", 0) >= 0.80:
                 rec_frames = pt.num_frames
                 break
+        if target_hit_ratio is not None:
+            target_met = rec_frames is not None
+            optimization_message = (f"Smallest tested configuration meeting the target: {rec_frames} frames."
+                                    if target_met else "No tested frame count met the target fault rate.")
 
         return ComparisonResult(
             reference_sequence=seq,
@@ -122,7 +136,9 @@ def api_compare(req: ComparisonRequest):
             frame_sweep=frame_sweep,
             belady_detected=belady_detected,
             belady_detail=belady_detail,
-            recommended_frames=rec_frames
+            recommended_frames=rec_frames,
+            target_met=target_met,
+            optimization_message=optimization_message
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

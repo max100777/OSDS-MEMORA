@@ -40,6 +40,7 @@ export const AlgorithmLabView: React.FC<AlgorithmLabViewProps> = ({
   const [sequenceInput, setSequenceInput] = useState('7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2');
   const [numFrames, setNumFrames] = useState(3);
   const [sweepMax, setSweepMax] = useState(8);
+  const [targetFaultRate, setTargetFaultRate] = useState(25);
   const [comparisonResult, setComparisonResult] = useState<ComparisonResult | null>(initialComparison || null);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export const AlgorithmLabView: React.FC<AlgorithmLabViewProps> = ({
         throw new Error('Please enter a valid comma-separated sequence of page numbers.');
       }
 
-      const res = await compareAlgorithms(seq, fCount, algorithmsToCompare, sweepMax);
+      const res = await compareAlgorithms(seq, fCount, algorithmsToCompare, sweepMax, targetFaultRate / 100);
       setComparisonResult(res);
       if (onComparisonComplete) onComparisonComplete(res);
     } catch (err: any) {
@@ -126,7 +127,7 @@ export const AlgorithmLabView: React.FC<AlgorithmLabViewProps> = ({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-2">
             <label className="block text-xs font-mono text-slate-400 mb-1.5">
               Reference Sequence
@@ -167,8 +168,20 @@ export const AlgorithmLabView: React.FC<AlgorithmLabViewProps> = ({
               />
             </div>
           </div>
+          <div>
+            <label className="block text-xs font-mono text-slate-400 mb-1.5">Target Fault Rate: {targetFaultRate}%</label>
+            <input type="range" min={0} max={100} value={targetFaultRate}
+              onChange={(e) => setTargetFaultRate(Number(e.target.value))}
+              className="w-full accent-indigo-500 bg-dark-800 h-2 rounded cursor-pointer" />
+          </div>
         </div>
       </div>
+
+      {comparisonResult?.optimization_message && (
+        <div className={`p-3 rounded-lg border text-xs font-mono ${comparisonResult.target_met ? 'bg-emerald-950/30 border-emerald-700 text-emerald-300' : 'bg-amber-950/30 border-amber-700 text-amber-300'}`}>
+          {comparisonResult.optimization_message}
+        </div>
+      )}
 
       {/* Belady Anomaly Alert Banner if detected */}
       {comparisonResult?.belady_detected && (

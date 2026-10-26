@@ -11,8 +11,9 @@ import {
   ExperimentRecord,
   AllocationPolicy
 } from '../types';
+import type { OptimizationResponse } from '../types';
 
-const API_BASE = 'http://127.0.0.1:8000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
 export async function fetchHealth(): Promise<{ status: string; models: Record<string, string> }> {
   const res = await fetch(`${API_BASE}/health`);
@@ -66,17 +67,39 @@ export async function compareAlgorithms(
   reference_sequence: number[],
   num_frames: number,
   algorithms: AlgorithmType[],
-  frame_sweep_max?: number
+  frame_sweep_max?: number,
+  target_fault_rate?: number
 ): Promise<ComparisonResult> {
   const res = await fetch(`${API_BASE}/compare`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ reference_sequence, num_frames, algorithms, frame_sweep_max })
+    body: JSON.stringify({ reference_sequence, num_frames, algorithms, frame_sweep_max, target_fault_rate })
   });
   if (!res.ok) {
     const err = await res.json();
     throw new Error(err.detail || 'Comparison failed.');
   }
+  return res.json();
+}
+
+export async function optimizeMemory(
+  reference_sequence: number[], algorithms: AlgorithmType[], candidate_frames: number[],
+  target_fault_rate: number, max_ram_budget: number
+): Promise<OptimizationResponse> {
+  const res = await fetch(`${API_BASE}/experiments/optimize`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reference_sequence, algorithms, candidate_frames, target_fault_rate, max_ram_budget })
+  });
+  if (!res.ok) throw new Error((await res.json()).detail || 'Optimization failed.');
+  return res.json();
+}
+
+export async function uploadTrace(content: string, format: 'csv' | 'json') {
+  const res = await fetch(`${API_BASE}/traces/upload`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content, format })
+  });
+  if (!res.ok) throw new Error((await res.json()).detail || 'Trace upload failed.');
   return res.json();
 }
 

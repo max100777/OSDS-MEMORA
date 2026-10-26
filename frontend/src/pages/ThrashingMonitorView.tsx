@@ -205,9 +205,9 @@ export const ThrashingMonitorView: React.FC<ThrashingMonitorViewProps> = ({
             trendColor={analysisResult.thrashing_steps_count > 0 ? 'red' : 'green'}
           />
           <MetricCard
-            title="Recommended Frames"
-            value={`${analysisResult.recommended_frame_count} Frames`}
-            subtitle={analysisResult.mean_working_set_size > numFrames ? `Add +${analysisResult.recommended_frame_count - numFrames} frames` : 'Adequate capacity'}
+            title="Memory Health Score"
+            value={`${analysisResult.memory_health_score}/100`}
+            subtitle={`Recommended capacity: ${analysisResult.recommended_frame_count} frames`}
             icon={CheckCircle2}
             trendColor="blue"
           />
@@ -275,7 +275,7 @@ export const ThrashingMonitorView: React.FC<ThrashingMonitorViewProps> = ({
       {analysisResult && (
         <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl">
           <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider font-mono mb-3">
-            Real-Time Pressure Alert Log & Recommended Corrective Actions
+            Pressure Alerts and Recommended Actions
           </h3>
           <div className="overflow-y-auto max-h-64 border border-dark-750 rounded-lg">
             <table className="w-full text-left border-collapse text-xs font-mono">

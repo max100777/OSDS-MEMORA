@@ -9,6 +9,9 @@ dist/
 build/
 backend/data/*.pth
 backend/data/experiments.json
+data/*.db
+data/*.db-shm
+data/*.db-wal
 
 # Node & Frontend
 node_modules/

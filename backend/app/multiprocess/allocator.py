@@ -247,11 +247,13 @@ def _initial_allocation(
         return allocs
     else:
         # Default / Equal: equal division
-        base = total_frames // n
-        rem = total_frames % n
-        allocs = {pid: base for pid in pids}
-        for i in range(rem):
-            allocs[pids[i]] += 1
+        allocs = {pid: procs[pid].min_frames for pid in pids}
+        remaining = total_frames - sum(allocs.values())
+        cursor = 0
+        while remaining:
+            allocs[pids[cursor % n]] += 1
+            remaining -= 1
+            cursor += 1
         return allocs
 
 

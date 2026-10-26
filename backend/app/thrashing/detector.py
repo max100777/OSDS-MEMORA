@@ -34,6 +34,8 @@ def analyze_thrashing(req: ThrashingAnalysisRequest) -> ThrashingAnalysisRespons
     total_alerts = 0
     thrashing_steps = 0
     all_wss: List[int] = []
+    previous_rate = 0.0
+    health_scores: List[float] = []
 
     for step_idx, ev in enumerate(sim_res.trace):
         page = ev.page
@@ -51,6 +53,12 @@ def analyze_thrashing(req: ThrashingAnalysisRequest) -> ThrashingAnalysisRespons
         wss = len(set(ref_window))
         all_wss.append(wss)
         rolling_fault_rate = round(sum(fault_window) / len(fault_window), 3)
+        trend = round(rolling_fault_rate - previous_rate, 3)
+        previous_rate = rolling_fault_rate
+        capacity_pressure = max(0.0, (wss - num_frames) / max(wss, 1))
+        trend_penalty = max(0.0, trend)
+        health = round(max(0.0, 100.0 * (1.0 - 0.65 * rolling_fault_rate - 0.25 * capacity_pressure - 0.10 * trend_penalty)), 1)
+        health_scores.append(health)
 
         # Determine Memory Pressure State
         alert_msg: Optional[str] = None
@@ -95,6 +103,8 @@ def analyze_thrashing(req: ThrashingAnalysisRequest) -> ThrashingAnalysisRespons
             pressure_state=pressure,
             alert=alert_msg,
             recommendation=recommendation
+            ,memory_health_score=health
+            ,fault_rate_trend=trend
         ))
 
     mean_wss = round(sum(all_wss) / len(all_wss), 2) if all_wss else float(num_frames)
@@ -119,6 +129,7 @@ def analyze_thrashing(req: ThrashingAnalysisRequest) -> ThrashingAnalysisRespons
             f"within {num_frames} physical frames."
         )
 
+    overall_health = round(sum(health_scores[-w_size:]) / len(health_scores[-w_size:]), 1) if health_scores else 100.0
     return ThrashingAnalysisResponse(
         timeline=timeline,
         overall_status=overall,
@@ -126,5 +137,7 @@ def analyze_thrashing(req: ThrashingAnalysisRequest) -> ThrashingAnalysisRespons
         thrashing_steps_count=thrashing_steps,
         mean_working_set_size=mean_wss,
         recommended_frame_count=recommended_frames,
-        summary_message=summary
+        summary_message=summary,
+        memory_health_score=overall_health,
+        actions_taken=[]
     )

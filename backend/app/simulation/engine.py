@@ -4,6 +4,7 @@ Executes reference sequences deterministically, collects granular step events,
 tracks prediction accuracy, and enforces strict causal boundaries (no future leakage).
 """
 import time
+import random
 from typing import List, Optional, Dict, Any, Tuple
 from app.models.schemas import (
     AlgorithmType,
@@ -17,6 +18,7 @@ from app.simulation.optimal import OptimalSimulator
 from app.prediction.markov import MarkovPredictor
 from app.prediction.lstm import LSTMPredictor
 from app.adaptive.controller import AdaptivePagingController
+from app.simulation.workload import classify_access_pattern
 
 def run_simulation(
     req: SimulationRequest,
@@ -57,6 +59,52 @@ def run_simulation(
     else:
         raise ValueError(f"Unsupported algorithm: {algo}")
 
+    # Add the explicit OS state/cost model without changing replacement semantics.
+    rng = random.Random(req.seed)
+    operations = list(req.operations or [])
+    if operations and len(operations) != len(sequence):
+        raise ValueError("operations must contain exactly one entry per reference")
+    if not operations:
+        from app.models.schemas import AccessType
+        operations = [AccessType.WRITE if rng.random() < req.write_ratio else AccessType.READ for _ in sequence]
+    dirty_pages: set[int] = set()
+    cumulative_cost = 0.0
+    dirty_writebacks = 0
+    for idx, event in enumerate(trace):
+        operation = operations[idx]
+        writeback = event.evicted_page is not None and event.evicted_page in dirty_pages
+        if writeback:
+            dirty_pages.discard(event.evicted_page)
+            dirty_writebacks += 1
+        step_cost = req.memory_latency
+        if not event.is_hit:
+            step_cost += req.disk_read_latency
+        if writeback:
+            step_cost += req.disk_write_latency
+        if operation.value == "write":
+            dirty_pages.add(event.page)
+        cumulative_cost += step_cost
+        event.timestamp = idx
+        event.process_id = req.process_id
+        event.operation = operation
+        event.dirty_writeback = writeback
+        event.simulated_access_cost = round(step_cost, 4)
+        event.cumulative_access_cost = round(cumulative_cost, 4)
+        resident = {p for p in event.frames_after if p is not None}
+        known_pages = set(sequence[: idx + 1]) | resident
+        event.page_table = {
+            str(p): {
+                "present": p in resident,
+                "valid": True,
+                "frame": event.frames_after.index(p) if p in resident else None,
+                "dirty": p in dirty_pages,
+            }
+            for p in sorted(known_pages)
+        }
+        if event.prediction_info:
+            raw = event.prediction_info.get("top_candidates", [])
+            event.candidate_scores = [dict(item) for item in raw]
+
     total_refs = len(sequence)
     total_hits = sum(1 for e in trace if e.is_hit)
     total_faults = total_refs - total_hits
@@ -76,7 +124,10 @@ def run_simulation(
         total_evictions=total_evictions,
         trace=trace,
         prediction_accuracy=accuracy,
-        execution_time_ms=elapsed_ms
+        execution_time_ms=elapsed_ms,
+        simulated_access_cost=round(cumulative_cost, 4),
+        dirty_writebacks=dirty_writebacks,
+        workload_pattern=classify_access_pattern(sequence)
     )
 
 

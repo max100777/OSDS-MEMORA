@@ -8,7 +8,7 @@ import {
   Users,
   FlaskConical,
   GraduationCap,
-  Sparkles,
+  Database,
   Server
 } from 'lucide-react';
 
@@ -37,40 +37,37 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navItems: { key: NavItemKey; label: string; icon: React.ComponentType<{ className?: string }>; tag?: string }[] = [
     { key: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { key: 'simulator', label: 'Memory Simulator', icon: Cpu },
-    { key: 'algorithms', label: 'Algorithm Lab', icon: GitCompare },
-    { key: 'prediction', label: 'AI Prediction Center', icon: Brain, tag: 'ML' },
-    { key: 'thrashing', label: 'Thrashing Monitor', icon: Flame },
-    { key: 'multiprocess', label: 'Multi-Process Manager', icon: Users },
-    { key: 'experiments', label: 'Experiments & Reports', icon: FlaskConical },
-    { key: 'learn', label: 'Learn OS Concepts', icon: GraduationCap, tag: 'VIVA' }
+    { key: 'simulator', label: 'Simulator', icon: Cpu },
+    { key: 'algorithms', label: 'Algorithms', icon: GitCompare },
+    { key: 'prediction', label: 'Prediction Models', icon: Brain },
+    { key: 'thrashing', label: 'Memory Pressure', icon: Flame },
+    { key: 'multiprocess', label: 'Process Allocation', icon: Users },
+    { key: 'experiments', label: 'Experiments', icon: FlaskConical },
+    { key: 'learn', label: 'Reference', icon: GraduationCap }
   ];
 
   return (
-    <aside className="w-64 bg-dark-900 border-r border-dark-750/70 flex flex-col justify-between h-screen shrink-0 select-none">
+    <aside className="w-60 bg-dark-900 border-r border-dark-750 flex flex-col justify-between h-screen shrink-0 select-none">
       <div>
         {/* Brand Header */}
-        <div className="p-5 border-b border-dark-750/60">
+        <div className="px-5 py-4 border-b border-dark-750">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+            <div className="w-8 h-8 rounded-md bg-slate-200 flex items-center justify-center text-dark-950">
               <Cpu className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-lg font-extrabold tracking-wider text-white font-mono flex items-center gap-1.5">
+              <h1 className="text-sm font-semibold tracking-[0.16em] text-white flex items-center gap-1.5">
                 MEMORA
-                <span className="text-[10px] bg-indigo-950 text-indigo-400 border border-indigo-700/50 px-1.5 py-0.2 rounded font-mono">
-                  v1.0
-                </span>
               </h1>
-              <p className="text-[10px] text-slate-400 tracking-tight font-sans">
-                Predictive & Adaptive Paging
+              <p className="text-[10px] text-slate-500">
+                Virtual memory simulator
               </p>
             </div>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="p-3 space-y-1">
+        <nav className="p-3 space-y-0.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.key;
@@ -78,14 +75,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.key}
                 onClick={() => onSelectTab(item.key)}
-                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-700/30 font-semibold'
+                    ? 'bg-slate-200 text-slate-950 font-semibold'
                     : 'text-slate-400 hover:text-slate-100 hover:bg-dark-800'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-slate-500'}`} />
                   <span>{item.label}</span>
                 </div>
                 {item.tag && (
@@ -129,8 +126,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <div className="flex items-center justify-between text-slate-400">
             <span className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-              PyTorch LSTM
+              <Database className="w-3.5 h-3.5" />
+              LSTM model
             </span>
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-semibold ${
@@ -145,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         <div className="mt-3 pt-3 border-t border-dark-800 text-[10px] text-slate-500 text-center font-mono">
-          OSDS Course Project • Academic Simulator
+          OSDS · Educational simulator
         </div>
       </div>
     </aside>

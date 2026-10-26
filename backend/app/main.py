@@ -4,7 +4,7 @@ OSDS Course Project.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import simulation, prediction, thrashing, multiprocess, experiments
+from app.api import simulation, prediction, thrashing, multiprocess, experiments, advanced, sessions
 import os
 
 app = FastAPI(
@@ -28,6 +28,8 @@ app.include_router(prediction.router)
 app.include_router(thrashing.router)
 app.include_router(multiprocess.router)
 app.include_router(experiments.router)
+app.include_router(advanced.router)
+app.include_router(sessions.router)
 
 @app.get("/api/health")
 def health_check():
