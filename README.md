@@ -96,13 +96,10 @@ Unlike simple frontend mockups, **every metric, hit ratio, frame state, algorith
 
 ### Backend Setup
 ```bash
-# Navigate to project directory
-cd "c:\Users\Yash\OSDS CP"
-
-# Install backend dependencies
+# From the repository root, install backend dependencies
 python -m pip install -r backend/requirements.txt
 
-# Run automated test suite (12 tests)
+# Run backend tests
 python -m pytest -v
 
 # Start FastAPI backend server (port 8000)
@@ -111,10 +108,8 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --app-dir backend
 
 ### Frontend Setup
 ```bash
-# In a new terminal, navigate to frontend directory
-cd "c:\Users\Yash\OSDS CP\frontend"
-
-# Install frontend dependencies
+# In another terminal
+cd frontend
 npm install
 
 # Start Vite dev server (port 5173)
@@ -125,23 +120,23 @@ Open your browser at **`http://127.0.0.1:5173/`**.
 
 ---
 
-## 5. Automated Test Suite
+## 5. Checks
 
-MEMORA includes 12 automated unit and regression tests in `backend/tests`:
+Run the backend and frontend checks from the repository root:
+
+```bash
+python -m pytest -v
+cd frontend
+npm test
+npm run build
+npm run lint
+npm run test:e2e
 ```
-backend/tests/test_algorithms.py::test_fifo_basic PASSED
-backend/tests/test_algorithms.py::test_lru_basic PASSED
-backend/tests/test_algorithms.py::test_optimal_benchmark_fewer_faults_than_fifo_and_lru PASSED
-backend/tests/test_algorithms.py::test_beladys_anomaly_fifo PASSED
-backend/tests/test_algorithms.py::test_empty_sequence_and_single_frame PASSED
-backend/tests/test_prediction.py::test_markov_transition_counts_and_normalization PASSED
-backend/tests/test_prediction.py::test_markov_unseen_state_fallback PASSED
-backend/tests/test_prediction.py::test_markov_no_future_leakage PASSED
-backend/tests/test_prediction.py::test_lstm_training_and_inference PASSED
-backend/tests/test_adaptive_thrashing_multi.py::test_adaptive_paging_runs_and_adapts PASSED
-backend/tests/test_adaptive_thrashing_multi.py::test_thrashing_detector_flags_pathological_workload PASSED
-backend/tests/test_adaptive_thrashing_multi.py::test_multiprocess_budget_conservation PASSED
-```
+
+The backend suite covers replacement policies, prediction, adaptive behavior,
+thrashing, allocation constraints, API sessions, trace upload, and experiment
+optimization. Vitest covers frontend state. Playwright covers key navigation
+and the viva guide. See [the frontend README](frontend/README.md) for setup notes.
 
 ---
 
@@ -158,5 +153,10 @@ backend/tests/test_adaptive_thrashing_multi.py::test_multiprocess_budget_conserv
 
 ---
 
-## 7. License & Academic Integrity
+## 7. Known limitations
+
+- Live API sessions are held in memory and are lost when the backend restarts.
+- MEMORA is a simulator; it does not implement MMU/TLB behavior or real disk I/O.
+
+## 8. License & Academic Integrity
 This project is built strictly for educational virtual memory simulation and course defense in Operating Systems & System Design (OSDS). It does not alter host OS hardware page tables or physical DRAM.

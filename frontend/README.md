@@ -1,32 +1,29 @@
-# React + TypeScript + Vite
+# MEMORA frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React, TypeScript, and Vite interface for the MEMORA virtual memory simulator.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Start the FastAPI backend from the repository root (see the root README), then:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Vite serves the application at `http://localhost:5173`. The frontend expects
+the API at `http://localhost:8000/api` unless `VITE_API_URL` is configured.
+
+## Checks
+
+```bash
+npm test       # Vitest unit tests
+npm run build  # TypeScript check and production build
+npm run lint   # ESLint
+npm run test:e2e # Playwright browser smoke test
+```
+
+Playwright starts its own Vite server on port 4173 and stubs the backend health
+check. Install a browser once with `npx playwright install chromium` if the
+Playwright browser is not already available.
