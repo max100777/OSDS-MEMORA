@@ -8,6 +8,8 @@ import { runSimulation, generateWorkload } from '../services/api';
 import { FrameGrid } from '../components/FrameGrid';
 import { EventLog } from '../components/EventLog';
 import { MetricCard } from '../components/MetricCard';
+import { StepExplanation } from '../components/StepExplanation';
+import { PageTablePanel } from '../components/PageTablePanel';
 import {
   Play,
   Pause,
@@ -394,6 +396,13 @@ export const SimulatorView: React.FC<SimulatorViewProps> = ({
             <span className="text-[10px] text-slate-500">Deterministic Online State</span>
           </div>
         </div>
+      )}
+
+      {currentStep && (
+        <>
+          <StepExplanation event={currentStep} algorithm={simulationResult.algorithm} />
+          <PageTablePanel event={currentStep} />
+        </>
       )}
 
       {/* Event Log with filter */}

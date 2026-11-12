@@ -39,6 +39,16 @@ export const ExperimentsView: React.FC<ExperimentsViewProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const exportJson = (experiment: ExperimentRecord) => {
+    const blob = new Blob([JSON.stringify(experiment, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `experiment_${experiment.id}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     loadSavedExperiments();
   }, []);
@@ -213,6 +223,13 @@ export const ExperimentsView: React.FC<ExperimentsViewProps> = ({
                   <Download className="w-3.5 h-3.5" />
                   Export CSV
                 </a>
+                <button
+                  onClick={() => exportJson(selectedExp)}
+                  className="px-3.5 py-1.5 rounded-lg bg-dark-800 hover:bg-dark-750 border border-dark-700 text-cyan-400 hover:text-cyan-300 font-mono text-xs flex items-center gap-1.5 transition-colors"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  Export JSON
+                </button>
               </div>
 
               {/* Report Sections */}

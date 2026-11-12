@@ -218,6 +218,9 @@ export const AlgorithmLabView: React.FC<AlgorithmLabViewProps> = ({
                   <th className="py-2.5 px-3">Hit Ratio</th>
                   <th className="py-2.5 px-3">Fault Rate</th>
                   <th className="py-2.5 px-3">Evictions</th>
+                  <th className="py-2.5 px-3">Cost</th>
+                  <th className="py-2.5 px-3">Prediction</th>
+                  <th className="py-2.5 px-3">Runtime</th>
                   <th className="py-2.5 px-3">OS Classification</th>
                 </tr>
               </thead>
@@ -255,6 +258,9 @@ export const AlgorithmLabView: React.FC<AlgorithmLabViewProps> = ({
                       <td className="py-2.5 px-3">{(s.hit_ratio * 100).toFixed(1)}%</td>
                       <td className="py-2.5 px-3">{(s.fault_rate * 100).toFixed(1)}%</td>
                       <td className="py-2.5 px-3">{s.total_evictions}</td>
+                      <td className="py-2.5 px-3 text-amber-300">{s.simulated_access_cost.toFixed(1)}</td>
+                      <td className="py-2.5 px-3 text-violet-300">{s.prediction_accuracy === null || s.prediction_accuracy === undefined ? '—' : `${(s.prediction_accuracy * 100).toFixed(1)}%`}</td>
+                      <td className="py-2.5 px-3">{s.execution_time_ms.toFixed(2)} ms</td>
                       <td className="py-2.5 px-3 text-slate-400 text-[11px]">
                         {isOptimal ? 'Theoretical Offline Bound' : isAdaptive ? 'Dynamic Online Feedback' : 'Static Traditional'}
                       </td>
@@ -263,6 +269,19 @@ export const AlgorithmLabView: React.FC<AlgorithmLabViewProps> = ({
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {comparisonResult && (
+        <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl">
+          <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider font-mono mb-3">
+            How to Read This Benchmark
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-300 leading-relaxed">
+            <p className="bg-dark-850 border border-dark-750 rounded-lg p-3"><strong className="text-amber-300">Cost:</strong> simulated memory, disk-read, and dirty write-back latency. Lower is better for this workload.</p>
+            <p className="bg-dark-850 border border-dark-750 rounded-lg p-3"><strong className="text-violet-300">Prediction:</strong> next-page prediction accuracy, where available. It is separate from page-fault performance.</p>
+            <p className="bg-dark-850 border border-dark-750 rounded-lg p-3"><strong className="text-cyan-300">Runtime:</strong> backend execution time for the measured trace, not simulated hardware latency.</p>
           </div>
         </div>
       )}
