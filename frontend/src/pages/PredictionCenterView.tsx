@@ -109,7 +109,7 @@ export const PredictionCenterView: React.FC = () => {
   const matrixKeys = Object.keys(matrix).sort((a, b) => parseInt(a) - parseInt(b));
 
   return (
-    <div className="space-y-6">
+    <div className="view-page view-prediction space-y-6">
       {/* Overview Banner */}
       <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-dark-750">
@@ -357,14 +357,14 @@ export const PredictionCenterView: React.FC = () => {
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={trainMetrics.training_history}>
-                  <XAxis dataKey="epoch" stroke="#475569" tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                  <YAxis stroke="#475569" tick={{ fontSize: 10, fill: '#94A3B8' }} />
+                  <XAxis dataKey="epoch" stroke="#777166" tick={{ fontSize: 10, fill: '#625E55' }} />
+                  <YAxis stroke="#777166" tick={{ fontSize: 10, fill: '#625E55' }} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0B0F19', borderColor: '#334155', borderRadius: '8px', fontSize: '11px' }}
+                    contentStyle={{ backgroundColor: '#FFFDF7', border: '2px solid #171717', borderRadius: '4px', fontSize: '11px', color: '#171717' }}
                   />
                   <Legend wrapperStyle={{ fontSize: '11px', fontFamily: 'monospace' }} />
-                  <Line type="monotone" dataKey="loss" name="CrossEntropy Loss" stroke="#EF4444" strokeWidth={2} />
-                  <Line type="monotone" dataKey="val_accuracy" name="Validation Accuracy" stroke="#10B981" strokeWidth={2} />
+                  <Line type="monotone" dataKey="loss" name="CrossEntropy Loss" stroke="#B7513E" strokeWidth={2} />
+                  <Line type="monotone" dataKey="val_accuracy" name="Validation Accuracy" stroke="#2F704B" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </div>

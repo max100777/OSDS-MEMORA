@@ -47,27 +47,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-60 bg-dark-900 border-r border-dark-750 flex flex-col justify-between h-screen shrink-0 select-none">
-      <div>
+    <aside className="app-sidebar w-60 bg-dark-900 border-r border-dark-750 flex flex-col justify-between h-screen shrink-0 select-none">
+      <div className="sidebar-top">
         {/* Brand Header */}
-        <div className="px-5 py-4 border-b border-dark-750">
+        <div className="brand-block px-5 py-4 border-b border-dark-750">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-md bg-slate-200 flex items-center justify-center text-dark-950">
+            <div className="brand-mark w-8 h-8 rounded-md bg-slate-200 flex items-center justify-center text-dark-950">
               <Cpu className="w-5 h-5" />
             </div>
             <div>
               <h1 className="text-sm font-semibold tracking-[0.16em] text-white flex items-center gap-1.5">
                 MEMORA
               </h1>
-              <p className="text-[10px] text-slate-500">
-                Virtual memory simulator
+              <p className="brand-caption text-[10px] text-slate-500">
+                VIRTUAL MEMORY LAB
               </p>
             </div>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="p-3 space-y-0.5">
+        <nav className="p-3 space-y-0.5" aria-label="Primary navigation">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentTab === item.key;
@@ -75,7 +75,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <button
                 key={item.key}
                 onClick={() => onSelectTab(item.key)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors ${
+                aria-current={isActive ? 'page' : undefined}
+                className={`nav-link w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors ${isActive ? 'active' : ''} ${
                   isActive
                     ? 'bg-slate-200 text-slate-950 font-semibold'
                     : 'text-slate-400 hover:text-slate-100 hover:bg-dark-800'
@@ -105,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* System Status Footer */}
-      <div className="p-4 border-t border-dark-750/60 bg-dark-950/50">
+      <div className="nav-footer p-4 border-t border-dark-750/60 bg-dark-950/50">
         <div className="space-y-2 text-xs font-mono">
           <div className="flex items-center justify-between text-slate-400">
             <span className="flex items-center gap-1.5">
@@ -118,7 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   backendOnline ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'
                 }`}
               />
-              <span className={backendOnline ? 'text-emerald-400 font-semibold' : 'text-rose-400'}>
+              <span className={backendOnline ? 'text-emerald-400 font-semibold' : 'text-rose-400'} aria-live="polite">
                 {backendOnline ? 'ONLINE' : 'OFFLINE'}
               </span>
             </span>
@@ -141,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        <div className="mt-3 pt-3 border-t border-dark-800 text-[10px] text-slate-500 text-center font-mono">
+        <div className="nav-footer-note mt-3 pt-3 border-t border-dark-800 text-[10px] text-slate-500 text-center font-mono">
           OSDS · Educational simulator
         </div>
       </div>

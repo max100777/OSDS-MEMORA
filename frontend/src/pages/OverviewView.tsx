@@ -50,7 +50,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 }) => {
   if (!lastSimulation) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center max-w-2xl mx-auto my-12 bg-dark-900 border border-dark-750/80 rounded-2xl shadow-2xl">
+      <div className="neo-empty-state view-overview flex flex-col items-center justify-center p-12 text-center max-w-2xl mx-auto my-12 bg-dark-900 border border-dark-750/80 rounded-2xl shadow-2xl">
         <div className="w-16 h-16 rounded-2xl bg-indigo-950/60 border border-indigo-700/50 flex items-center justify-center text-indigo-400 mb-4 shadow-lg shadow-indigo-950">
           <Cpu className="w-8 h-8" />
         </div>
@@ -89,8 +89,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
   // Pie chart data
   const pieData = [
-    { name: 'Page Hits', value: hits, color: '#10B981' },
-    { name: 'Page Faults', value: faults, color: '#EF4444' }
+    { name: 'Page Hits', value: hits, color: '#2F704B' },
+    { name: 'Page Faults', value: faults, color: '#B7513E' }
   ];
 
   // Timeline curve data
@@ -109,7 +109,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const utilization = ((occupiedCount / lastSimulation.num_frames) * 100).toFixed(0);
 
   return (
-    <div className="space-y-6">
+    <div className="view-page view-overview space-y-6">
       {/* Top Real Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
@@ -176,26 +176,26 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
-                <XAxis dataKey="step" stroke="#475569" tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                <YAxis stroke="#475569" domain={[0, 100]} tick={{ fontSize: 10, fill: '#94A3B8' }} />
+                <XAxis dataKey="step" stroke="#777166" tick={{ fontSize: 10, fill: '#625E55' }} />
+                <YAxis stroke="#777166" domain={[0, 100]} tick={{ fontSize: 10, fill: '#625E55' }} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0B0F19', borderColor: '#334155', borderRadius: '8px', fontSize: '11px', color: '#F1F5F9' }}
+                  contentStyle={{ backgroundColor: '#FFFDF7', border: '2px solid #171717', borderRadius: '4px', fontSize: '11px', color: '#171717' }}
                 />
                 <Line
                   type="monotone"
                   dataKey="faultRate"
                   name="Fault Rate (%)"
-                  stroke="#EF4444"
+                  stroke="#B7513E"
                   strokeWidth={2}
-                  dot={{ r: 2, fill: '#EF4444' }}
+                  dot={{ r: 2, fill: '#B7513E' }}
                 />
                 <Line
                   type="monotone"
                   dataKey="hitRatio"
                   name="Hit Ratio (%)"
-                  stroke="#10B981"
+                  stroke="#2F704B"
                   strokeWidth={2}
-                  dot={{ r: 2, fill: '#10B981' }}
+                  dot={{ r: 2, fill: '#2F704B' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -228,7 +228,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0B0F19', borderColor: '#334155', borderRadius: '8px', fontSize: '11px' }}
+                  contentStyle={{ backgroundColor: '#FFFDF7', border: '2px solid #171717', borderRadius: '4px', fontSize: '11px', color: '#171717' }}
                 />
               </PieChart>
             </ResponsiveContainer>

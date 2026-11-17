@@ -91,7 +91,7 @@ export const ThrashingMonitorView: React.FC<ThrashingMonitorViewProps> = ({
   })) || [];
 
   return (
-    <div className="space-y-6">
+    <div className="view-page view-pressure space-y-6">
       {/* Top Controller */}
       <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-dark-750">
@@ -241,17 +241,17 @@ export const ThrashingMonitorView: React.FC<ThrashingMonitorViewProps> = ({
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={timelineChartData}>
-                <XAxis dataKey="step" stroke="#475569" tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                <YAxis stroke="#475569" tick={{ fontSize: 10, fill: '#94A3B8' }} />
+                <XAxis dataKey="step" stroke="#777166" tick={{ fontSize: 10, fill: '#625E55' }} />
+                <YAxis stroke="#777166" tick={{ fontSize: 10, fill: '#625E55' }} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0B0F19', borderColor: '#334155', borderRadius: '8px', fontSize: '11px' }}
+                  contentStyle={{ backgroundColor: '#FFFDF7', border: '2px solid #171717', borderRadius: '4px', fontSize: '11px', color: '#171717' }}
                 />
                 <Area
                   type="monotone"
                   dataKey="wss"
                   name="Working Set Size WSS"
-                  stroke="#F59E0B"
-                  fill="#F59E0B"
+                  stroke="#A98600"
+                  fill="#F5D547"
                   fillOpacity={0.2}
                   strokeWidth={2}
                 />
@@ -259,8 +259,8 @@ export const ThrashingMonitorView: React.FC<ThrashingMonitorViewProps> = ({
                   type="stepAfter"
                   dataKey="frames"
                   name="Allocated Frames Limit"
-                  stroke="#6366F1"
-                  fill="#6366F1"
+                  stroke="#3155D9"
+                  fill="#3155D9"
                   fillOpacity={0.05}
                   strokeWidth={2}
                   strokeDasharray="4 4"

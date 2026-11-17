@@ -28,10 +28,10 @@ export const EventLog: React.FC<EventLogProps> = ({ trace, activeStep, onSelectS
   });
 
   return (
-    <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl flex flex-col h-full">
+    <div className="neo-event-log bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl flex flex-col h-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
+          <h3 className="panel-heading text-sm font-semibold text-slate-200 uppercase tracking-wider">
             Memory Reference Event Log ({trace.length} Events)
           </h3>
           <p className="text-xs text-slate-400">Step-by-step OS trace of frame allocations and page replacements</p>
@@ -79,8 +79,8 @@ export const EventLog: React.FC<EventLogProps> = ({ trace, activeStep, onSelectS
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto max-h-[380px] border border-dark-750 rounded-lg">
-        <table className="w-full text-left border-collapse text-xs font-mono">
+      <div className="flex-1 overflow-auto max-h-[380px] border border-dark-750 rounded-lg">
+        <table className="neo-data-table w-full text-left border-collapse text-xs font-mono">
           <thead className="bg-dark-850 sticky top-0 border-b border-dark-700 text-slate-400 z-10">
             <tr>
               <th className="py-2.5 px-3">Step</th>
@@ -104,7 +104,15 @@ export const EventLog: React.FC<EventLogProps> = ({ trace, activeStep, onSelectS
                 return (
                   <tr
                     key={event.step}
+                    tabIndex={0}
+                    aria-selected={isSelected}
                     onClick={() => onSelectStep && onSelectStep(event.step)}
+                    onKeyDown={(keyboardEvent) => {
+                      if ((keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') && onSelectStep) {
+                        keyboardEvent.preventDefault();
+                        onSelectStep(event.step);
+                      }
+                    }}
                     className={`cursor-pointer transition-colors ${
                       isSelected
                         ? 'bg-indigo-950/60 border-l-2 border-indigo-400'

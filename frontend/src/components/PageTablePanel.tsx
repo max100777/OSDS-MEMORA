@@ -10,7 +10,7 @@ export const PageTablePanel: React.FC<PageTablePanelProps> = ({ event }) => {
   const entries = Object.entries(event.page_table).sort(([a], [b]) => Number(a) - Number(b));
 
   return (
-    <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl">
+    <div className="neo-page-table bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl">
       <div className="flex items-center gap-2 mb-3">
         <Database className="w-4 h-4 text-cyan-400" />
         <div>
@@ -18,8 +18,8 @@ export const PageTablePanel: React.FC<PageTablePanelProps> = ({ event }) => {
           <p className="text-xs text-slate-400">Virtual pages mapped to physical frames after this reference.</p>
         </div>
       </div>
-      <div className="overflow-x-auto border border-dark-750 rounded-lg">
-        <table className="w-full text-left text-xs font-mono">
+        <div className="overflow-x-auto border border-dark-750 rounded-lg">
+        <table className="neo-data-table w-full text-left text-xs font-mono">
           <thead className="bg-dark-850 text-slate-400">
             <tr>
               <th className="px-3 py-2">Virtual page</th>

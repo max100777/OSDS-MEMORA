@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   isSimulating = false
 }) => {
   return (
-    <header className="h-16 bg-dark-900 border-b border-dark-750 px-6 flex items-center justify-between shrink-0 sticky top-0 z-20">
+    <header className="app-header bg-dark-900 border-b border-dark-750 px-6 flex items-center justify-between shrink-0 sticky top-0 z-20">
       <div>
         <h2 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
           {title}
@@ -27,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({
         <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="header-actions flex items-center gap-3">
         {/* Viva Defence Guide Button */}
         <button
           onClick={onOpenVivaGuide}
@@ -35,17 +35,17 @@ export const Header: React.FC<HeaderProps> = ({
           title="Open OSDS Viva & Project Defense Cheat Sheet"
         >
           <BookOpen className="w-3.5 h-3.5" />
-          <span>Reference</span>
+          <span>Viva guide</span>
         </button>
 
         {/* Quick Sample Workload Button */}
         <button
           onClick={onQuickSample}
           disabled={isSimulating}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md bg-slate-200 hover:bg-white text-slate-950 font-semibold transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-colors disabled:opacity-50"
         >
           <Play className="w-3.5 h-3.5 fill-current" />
-          <span>Run sample</span>
+          <span>Run sample workload</span>
         </button>
 
         {/* Global Reset */}

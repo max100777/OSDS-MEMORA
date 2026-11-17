@@ -21,6 +21,49 @@ interface ExperimentsViewProps {
   comparisonResult: ComparisonResult | null;
 }
 
+const csvSummaryNumberFields = [
+  'num_frames',
+  'total_references',
+  'total_hits',
+  'total_faults',
+  'hit_ratio',
+  'fault_rate',
+  'total_evictions',
+  'prediction_accuracy',
+  'simulated_access_cost',
+  'execution_time_ms'
+] as const;
+
+const toCsvSummary = (simulation: SimulationResult) => {
+  const missingMetrics = [
+    ...(typeof simulation.algorithm === 'string' && simulation.algorithm ? [] : ['algorithm']),
+    ...csvSummaryNumberFields.filter((field) =>
+      typeof simulation[field] !== 'number' || !Number.isFinite(simulation[field])
+    )
+  ];
+
+  if (missingMetrics.length > 0) {
+    return { summary: null, missingMetrics };
+  }
+
+  return {
+    summary: {
+      algorithm: simulation.algorithm,
+      num_frames: simulation.num_frames,
+      total_references: simulation.total_references,
+      total_hits: simulation.total_hits,
+      total_faults: simulation.total_faults,
+      hit_ratio: simulation.hit_ratio,
+      fault_rate: simulation.fault_rate,
+      total_evictions: simulation.total_evictions,
+      prediction_accuracy: simulation.prediction_accuracy,
+      simulated_access_cost: simulation.simulated_access_cost,
+      execution_time_ms: simulation.execution_time_ms
+    },
+    missingMetrics
+  };
+};
+
 export const ExperimentsView: React.FC<ExperimentsViewProps> = ({
   lastSimulation,
   comparisonResult
@@ -38,6 +81,7 @@ export const ExperimentsView: React.FC<ExperimentsViewProps> = ({
   );
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [csvMetricsWarning, setCsvMetricsWarning] = useState<string | null>(null);
 
   const exportJson = (experiment: ExperimentRecord) => {
     const blob = new Blob([JSON.stringify(experiment, null, 2)], { type: 'application/json' });
@@ -68,16 +112,33 @@ export const ExperimentsView: React.FC<ExperimentsViewProps> = ({
   const handleSaveCurrent = async () => {
     setIsSaving(true);
     setSaveSuccess(false);
+    setCsvMetricsWarning(null);
     try {
       const config = {
         frames: lastSimulation?.num_frames || comparisonResult?.num_frames || 3,
         algorithm: lastSimulation?.algorithm || 'Comparative Suite',
         sequence_length: lastSimulation?.total_references || comparisonResult?.reference_sequence.length || 20
       };
-      const results = {
+      const results: Record<string, unknown> = {
         simulation: lastSimulation,
         comparison: comparisonResult
       };
+
+      if (comparisonResult) {
+        results.summaries = comparisonResult.summaries;
+        if (comparisonResult.frame_sweep !== undefined) {
+          results.frame_sweep = comparisonResult.frame_sweep;
+        }
+      } else if (lastSimulation) {
+        const { summary, missingMetrics } = toCsvSummary(lastSimulation);
+        if (summary) {
+          results.summaries = [summary];
+        } else {
+          setCsvMetricsWarning(
+            `CSV metrics were not included because this simulation is missing valid values for: ${missingMetrics.join(', ')}.`
+          );
+        }
+      }
 
       const record = await saveExperiment(expName, hypothesis, config, results, notes);
       setSaveSuccess(true);
@@ -92,7 +153,7 @@ export const ExperimentsView: React.FC<ExperimentsViewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="view-page view-experiments space-y-6">
       {/* Save Current Experiment Form */}
       <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-dark-750">
@@ -121,6 +182,11 @@ export const ExperimentsView: React.FC<ExperimentsViewProps> = ({
             <CheckCircle2 className="w-4 h-4" />
             Experiment successfully persisted to local storage.
           </div>
+        )}
+        {saveSuccess && csvMetricsWarning && (
+          <p className="text-xs font-mono text-amber-300" role="status">
+            {csvMetricsWarning}
+          </p>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

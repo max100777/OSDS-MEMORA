@@ -85,7 +85,7 @@ export const MultiProcessView: React.FC = () => {
   })) || [];
 
   return (
-    <div className="space-y-6">
+    <div className="view-page view-allocation space-y-6">
       {/* Top Configuration Bar */}
       <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-dark-750">
@@ -290,14 +290,14 @@ export const MultiProcessView: React.FC = () => {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={allocationTimeline}>
-                <XAxis dataKey="step" stroke="#475569" tick={{ fontSize: 10, fill: '#94A3B8' }} />
-                <YAxis stroke="#475569" tick={{ fontSize: 10, fill: '#94A3B8' }} />
+                <XAxis dataKey="step" stroke="#777166" tick={{ fontSize: 10, fill: '#625E55' }} />
+                <YAxis stroke="#777166" tick={{ fontSize: 10, fill: '#625E55' }} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0B0F19', borderColor: '#334155', borderRadius: '8px', fontSize: '11px' }}
+                  contentStyle={{ backgroundColor: '#FFFDF7', border: '2px solid #171717', borderRadius: '4px', fontSize: '11px', color: '#171717' }}
                 />
-                <Area type="stepAfter" dataKey="P1_frames" name="P1 Frames" stroke="#6366F1" fill="#6366F1" fillOpacity={0.2} />
-                <Area type="stepAfter" dataKey="P2_frames" name="P2 Frames" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.2} />
-                <Area type="stepAfter" dataKey="P3_frames" name="P3 Frames" stroke="#10B981" fill="#10B981" fillOpacity={0.2} />
+                <Area type="stepAfter" dataKey="P1_frames" name="P1 Frames" stroke="#3155D9" fill="#3155D9" fillOpacity={0.2} />
+                <Area type="stepAfter" dataKey="P2_frames" name="P2 Frames" stroke="#C85655" fill="#C85655" fillOpacity={0.2} />
+                <Area type="stepAfter" dataKey="P3_frames" name="P3 Frames" stroke="#2F704B" fill="#2F704B" fillOpacity={0.2} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

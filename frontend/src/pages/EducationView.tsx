@@ -88,7 +88,7 @@ export const EducationView: React.FC<EducationViewProps> = ({ onLaunchTopicSimul
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="view-page view-reference space-y-6">
       {/* Top Banner */}
       <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl flex items-center justify-between">
         <div className="flex items-center gap-3">
