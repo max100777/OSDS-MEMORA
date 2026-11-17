@@ -12,7 +12,9 @@ test('opens the dashboard, navigates between sections, and opens the viva guide'
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Simulator' }).click();
+  await page.getByRole('navigation', { name: 'Primary navigation' })
+    .getByRole('button', { name: 'Simulator', exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: 'Memory Simulator' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Algorithms' }).click();

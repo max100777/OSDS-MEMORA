@@ -1,17 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { Sidebar, NavItemKey } from './components/Sidebar';
 import { Header } from './components/Header';
 import { VivaModal } from './components/VivaModal';
 
-// Pages
-import { OverviewView } from './pages/OverviewView';
-import { SimulatorView } from './pages/SimulatorView';
-import { AlgorithmLabView } from './pages/AlgorithmLabView';
-import { PredictionCenterView } from './pages/PredictionCenterView';
-import { ThrashingMonitorView } from './pages/ThrashingMonitorView';
-import { MultiProcessView } from './pages/MultiProcessView';
-import { ExperimentsView } from './pages/ExperimentsView';
-import { EducationView } from './pages/EducationView';
+// Load each tab only when selected; App retains ownership of shared state.
+const OverviewView = React.lazy(() =>
+  import('./pages/OverviewView').then(({ OverviewView }) => ({ default: OverviewView }))
+);
+const SimulatorView = React.lazy(() =>
+  import('./pages/SimulatorView').then(({ SimulatorView }) => ({ default: SimulatorView }))
+);
+const AlgorithmLabView = React.lazy(() =>
+  import('./pages/AlgorithmLabView').then(({ AlgorithmLabView }) => ({ default: AlgorithmLabView }))
+);
+const PredictionCenterView = React.lazy(() =>
+  import('./pages/PredictionCenterView').then(({ PredictionCenterView }) => ({ default: PredictionCenterView }))
+);
+const ThrashingMonitorView = React.lazy(() =>
+  import('./pages/ThrashingMonitorView').then(({ ThrashingMonitorView }) => ({ default: ThrashingMonitorView }))
+);
+const MultiProcessView = React.lazy(() =>
+  import('./pages/MultiProcessView').then(({ MultiProcessView }) => ({ default: MultiProcessView }))
+);
+const ExperimentsView = React.lazy(() =>
+  import('./pages/ExperimentsView').then(({ ExperimentsView }) => ({ default: ExperimentsView }))
+);
+const EducationView = React.lazy(() =>
+  import('./pages/EducationView').then(({ EducationView }) => ({ default: EducationView }))
+);
 
 import {
   SimulationResult,
@@ -166,55 +182,64 @@ export function App() {
 
         <main className="flex-1 overflow-y-auto">
           <div className="app-content max-w-7xl mx-auto pb-12">
-            {currentTab === 'overview' && (
-              <OverviewView
-                lastSimulation={lastSimulation}
-                comparisonResult={comparisonResult}
-                thrashingResult={thrashingResult}
-                onLaunchSample={handleLaunchSampleWorkload}
-                onNavigateTab={setCurrentTab}
-              />
-            )}
+            <Suspense
+              fallback={(
+                <div className="neo-page-loading" role="status" aria-live="polite">
+                  <span className="neo-page-spinner" aria-hidden="true" />
+                  Loading {headerDetails.title}…
+                </div>
+              )}
+            >
+              {currentTab === 'overview' && (
+                <OverviewView
+                  lastSimulation={lastSimulation}
+                  comparisonResult={comparisonResult}
+                  thrashingResult={thrashingResult}
+                  onLaunchSample={handleLaunchSampleWorkload}
+                  onNavigateTab={setCurrentTab}
+                />
+              )}
 
-            {currentTab === 'simulator' && (
-              <SimulatorView
-                initialResult={lastSimulation}
-                onSimulationComplete={(res) => setLastSimulation(res)}
-              />
-            )}
+              {currentTab === 'simulator' && (
+                <SimulatorView
+                  initialResult={lastSimulation}
+                  onSimulationComplete={(res) => setLastSimulation(res)}
+                />
+              )}
 
-            {currentTab === 'algorithms' && (
-              <AlgorithmLabView
-                initialComparison={comparisonResult}
-                onComparisonComplete={(res) => setComparisonResult(res)}
-              />
-            )}
+              {currentTab === 'algorithms' && (
+                <AlgorithmLabView
+                  initialComparison={comparisonResult}
+                  onComparisonComplete={(res) => setComparisonResult(res)}
+                />
+              )}
 
-            {currentTab === 'prediction' && (
-              <PredictionCenterView />
-            )}
+              {currentTab === 'prediction' && (
+                <PredictionCenterView />
+              )}
 
-            {currentTab === 'thrashing' && (
-              <ThrashingMonitorView
-                initialResult={thrashingResult}
-                onAnalysisComplete={(res) => setThrashingResult(res)}
-              />
-            )}
+              {currentTab === 'thrashing' && (
+                <ThrashingMonitorView
+                  initialResult={thrashingResult}
+                  onAnalysisComplete={(res) => setThrashingResult(res)}
+                />
+              )}
 
-            {currentTab === 'multiprocess' && (
-              <MultiProcessView />
-            )}
+              {currentTab === 'multiprocess' && (
+                <MultiProcessView />
+              )}
 
-            {currentTab === 'experiments' && (
-              <ExperimentsView
-                lastSimulation={lastSimulation}
-                comparisonResult={comparisonResult}
-              />
-            )}
+              {currentTab === 'experiments' && (
+                <ExperimentsView
+                  lastSimulation={lastSimulation}
+                  comparisonResult={comparisonResult}
+                />
+              )}
 
-            {currentTab === 'learn' && (
-              <EducationView onLaunchTopicSimulation={handleLaunchTopicSimulation} />
-            )}
+              {currentTab === 'learn' && (
+                <EducationView onLaunchTopicSimulation={handleLaunchTopicSimulation} />
+              )}
+            </Suspense>
           </div>
         </main>
       </div>
