@@ -144,7 +144,7 @@ export function App() {
   const headerDetails = getHeaderDetails();
 
   return (
-    <div className="flex h-screen bg-dark-950 text-slate-100 overflow-hidden font-sans">
+    <div className="app-shell flex h-screen bg-dark-950 text-slate-100 overflow-hidden font-sans">
       {/* Sidebar Navigation */}
       <Sidebar
         currentTab={currentTab}
@@ -154,7 +154,7 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="app-main flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header
           title={headerDetails.title}
           subtitle={headerDetails.subtitle}
@@ -164,8 +164,8 @@ export function App() {
           isSimulating={isQuickRunning}
         />
 
-        <main className="flex-1 overflow-y-auto p-5">
-          <div className="max-w-7xl mx-auto pb-12">
+        <main className="flex-1 overflow-y-auto">
+          <div className="app-content max-w-7xl mx-auto pb-12">
             {currentTab === 'overview' && (
               <OverviewView
                 lastSimulation={lastSimulation}

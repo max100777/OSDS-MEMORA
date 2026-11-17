@@ -17,7 +17,7 @@ export const FrameGrid: React.FC<FrameGridProps> = ({
   algorithmName = 'Paging'
 }) => {
   return (
-    <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl">
+    <div className="neo-frame-panel bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Cpu className="w-5 h-5 text-indigo-400" />
@@ -58,7 +58,7 @@ export const FrameGrid: React.FC<FrameGridProps> = ({
           return (
             <div
               key={idx}
-              className={`rounded-lg border p-3 flex flex-col justify-between transition-all duration-300 relative overflow-hidden ${borderClass}`}
+              className={`neo-frame rounded-lg border p-3 flex flex-col justify-between transition-all duration-300 relative overflow-hidden ${borderClass}`}
             >
               <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 mb-2">
                 <span>Frame #{idx}</span>

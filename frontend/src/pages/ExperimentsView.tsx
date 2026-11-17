@@ -92,7 +92,7 @@ export const ExperimentsView: React.FC<ExperimentsViewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="view-page view-experiments space-y-6">
       {/* Save Current Experiment Form */}
       <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-dark-750">

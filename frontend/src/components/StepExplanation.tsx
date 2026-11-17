@@ -12,10 +12,10 @@ export const StepExplanation: React.FC<StepExplanationProps> = ({ event, algorit
   const statusLabel = event.is_hit ? 'Hit' : event.evicted_page === null ? 'Cold page fault' : 'Capacity page fault';
 
   return (
-    <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl space-y-4">
+    <div className="neo-explanation bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
+          <h3 className="panel-heading text-sm font-semibold text-slate-200 uppercase tracking-wider font-mono flex items-center gap-2">
             <Lightbulb className="w-4 h-4 text-amber-400" />
             Explain This Decision
           </h3>
@@ -51,7 +51,7 @@ export const StepExplanation: React.FC<StepExplanationProps> = ({ event, algorit
         </div>
       </div>
 
-      <div className="rounded-lg bg-indigo-950/30 border border-indigo-800/50 p-3 text-xs text-indigo-100 leading-relaxed">
+      <div className="neo-rationale rounded-lg bg-indigo-950/30 border border-indigo-800/50 p-3 text-xs text-indigo-100 leading-relaxed">
         <span className="font-semibold text-indigo-300">OS decision rationale: </span>
         {event.reason}
       </div>

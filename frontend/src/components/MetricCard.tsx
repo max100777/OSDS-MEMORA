@@ -31,16 +31,16 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
   return (
     <div
-      className="bg-dark-900 border border-dark-750 rounded-lg p-4 relative group"
+      className="neo-metric-card bg-dark-900 border border-dark-750 rounded-lg p-4 relative group"
       title={tooltip}
     >
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-medium text-slate-500">{title}</p>
           <div className="mt-1 flex items-baseline gap-2">
-            <span className="text-xl font-semibold font-mono tracking-tight text-slate-100">{value}</span>
+            <span className="neo-metric-value text-3xl font-black font-mono tracking-tight text-slate-100">{value}</span>
             {trend && (
-              <span className={`text-xs px-2 py-0.5 rounded-full border font-mono ${getTrendColor()}`}>
+              <span className={`text-xs px-2 py-0.5 rounded border font-mono ${getTrendColor()}`}>
                 {trend}
               </span>
             )}
@@ -49,7 +49,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             <p className="mt-1 text-xs text-slate-500 font-mono">{subtitle}</p>
           )}
         </div>
-        <div className="p-2 bg-dark-850 border border-dark-750 rounded-md text-slate-500">
+        <div className="neo-metric-icon p-2 bg-dark-850 border border-dark-750 rounded-md text-slate-500">
           <Icon className="w-4 h-4" />
         </div>
       </div>

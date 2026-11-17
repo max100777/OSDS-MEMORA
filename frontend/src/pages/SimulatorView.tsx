@@ -130,7 +130,7 @@ export const SimulatorView: React.FC<SimulatorViewProps> = ({
   const currentFrames = currentStep ? currentStep.frames_after : Array(numFrames).fill(null);
 
   return (
-    <div className="space-y-6">
+    <div className="view-page view-simulator space-y-6">
       {/* Configuration Controls Bar */}
       <div className="bg-dark-900 border border-dark-750/70 rounded-xl p-5 shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-dark-750">

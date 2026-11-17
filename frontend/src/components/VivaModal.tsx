@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, GraduationCap, CheckCircle2, AlertTriangle, ShieldCheck, HelpCircle } from 'lucide-react';
 
 interface VivaModalProps {
@@ -7,6 +7,42 @@ interface VivaModalProps {
 }
 
 export const VivaModal: React.FC<VivaModalProps> = ({ isOpen, onClose }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab' || !dialogRef.current) return;
+      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      ));
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const faqs = [
@@ -37,8 +73,8 @@ export const VivaModal: React.FC<VivaModalProps> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-dark-900 border border-dark-700 rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+    <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="viva-modal-title" className="modal-card bg-dark-900 border border-dark-700 rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="p-5 border-b border-dark-750 flex items-center justify-between bg-dark-850">
           <div className="flex items-center gap-3">
@@ -46,7 +82,7 @@ export const VivaModal: React.FC<VivaModalProps> = ({ isOpen, onClose }) => {
               <GraduationCap className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white font-mono flex items-center gap-2">
+              <h2 id="viva-modal-title" className="text-base font-bold text-white font-mono flex items-center gap-2">
                 OSDS Viva Defense & Conceptual Architecture Guide
               </h2>
               <p className="text-xs text-slate-400">
@@ -55,7 +91,9 @@ export const VivaModal: React.FC<VivaModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
           <button
+            ref={closeButtonRef}
             onClick={onClose}
+            aria-label="Close Viva guide"
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-dark-750 transition-colors"
           >
             <X className="w-5 h-5" />
